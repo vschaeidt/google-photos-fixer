@@ -86,7 +86,7 @@ class GooglePhotosFixer
     # for 20210529_155539 patterns
     filename = filename_without_ext(image_file)
     tokens = filename.scan(/(\d{4})(\d{2})(\d{2})\_(\d{2})(\d{2})(\d{2})/).flatten
-    if tokens.compact == 6
+    if tokens.compact.length == 6
       time = Time.new(*tokens)
       debug("Time inferred file: #{filename}, time: #{time}")
       return time
@@ -95,7 +95,7 @@ class GooglePhotosFixer
     # for CameraZOOM-20131224200623261 patterns
     # for CameraZOOM-2013 12 24 20 06 23 261 patterns
     tokens = filename.scan(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{3})/).flatten
-    if tokens.compact == 7
+    if tokens.compact.length == 7
       time = Time.new(*tokens)
       debug("Time inferred file: #{filename}, time: #{time}")
       return time
@@ -103,7 +103,7 @@ class GooglePhotosFixer
 
     # for DJI_20250308180700_0070_D patterns
     tokens = filename.scan(/\_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\_/).flatten
-    if tokens.compact == 6
+    if tokens.compact.length == 6
       time = Time.new(*tokens)
       debug("Time inferred file: #{filename}, time: #{time}")
       return time
@@ -111,7 +111,7 @@ class GooglePhotosFixer
 
     # for Photos from 2024/P01020304.jpg or 2024/IMG_123123.jpg pattern
     tokens = image_file.scan(/Photos\ from\ (\d{4})\//).flatten
-    if tokens.compact == 1
+    if tokens.compact.length == 1
       time = Time.new(*tokens)
       debug("Time inferred file: #{image_file}, time: #{time}")
       return time
@@ -324,6 +324,32 @@ def run_tests
     FileUtils.rm(tmp_file)
 
     fixer.fixes.last == "IMG_1234.jpg.supplemental-metadata(1).json moved to IMG_1234(1).jpg.supplemental-metadata.json"
+  end
+
+  # Test infer time from image file names
+  test("infer time from image file name 20210529_155539.jpg") do
+    time = fixer.infer_time_from_image_file("20210529_155539.jpg")
+    time == Time.new(2021, 5, 29, 15, 55, 39)
+  end
+
+  test("infer time from image file name CameraZOOM-20131224200623261.jpg") do
+    time = fixer.infer_time_from_image_file("CameraZOOM-20131224200623261.jpg")
+    time == Time.new(2013, 12, 24, 20, 6, 23)
+  end
+
+  test("infer time from image file name DJI_20250308180700_0070_D.jpg") do
+    time = fixer.infer_time_from_image_file("DJI_20250308180700_0070_D.jpg")
+    time == Time.new(2025, 3, 8, 18, 7, 0)
+  end
+
+  test("infer time from image file name Photos from 2024/P01020304.jpg") do
+    time = fixer.infer_time_from_image_file("Photos from 2024/P01020304.jpg")
+    time == Time.new(2024, 1, 1, 0, 0, 0)
+  end
+
+  test("infer time from image file name Photos from IMG_12.jpg") do
+    time = fixer.infer_time_from_image_file("Photos from IMG_12.jpg")
+    time == nil
   end
 end
 
