@@ -176,7 +176,7 @@ class GooglePhotosFixer
           "formatted": time.to_s
         }
       }
-      write_file(metadata_filename, content.to_json)
+      write_file(metadata_filename, json_content.to_json)
     else
       errors << "Unable to infer metadata for #{image_file}"
     end
