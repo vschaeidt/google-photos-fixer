@@ -25,7 +25,6 @@ exiftool -r -d %s -tagsfromfile "%d/%F.supplemental-metadata.json" \
   "-Caption-Abstract<Description" "-ImageDescription<Description" \
   "-DateTimeOriginal<PhotoTakenTimeTimestamp" \
   "-DateCreated<PhotoTakenTimeTimestamp" \
-  "-DateModified<CreationTimeTimestamp" \
   -ext "*" -overwrite_original -progress --ext json -ifd0:all= \
   takeout/Takeout/Google\ Fotos/
 ```
