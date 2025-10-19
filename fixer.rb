@@ -81,73 +81,69 @@ class GooglePhotosFixer
     "#{image_file}.#{METADATA_JSON}"
   end
 
+  # Centralize the logic to generate the Time object from image file name
+  def time_from_tokens(filename, *tokens)
+    year = tokens[0].to_i
+    if year > 1823 && year < 2116 # Time year limit
+      time = Time.new(*tokens)
+      debug("Time inferred file: #{filename}, time: #{time}")
+      return time
+    end
+    debug("Time could not be created: #{filename}, year: #{year}")
+    return nil
+  end
+
   # Try detect the timestamp from file name pattern
   def infer_time_from_image_file(image_file)
     # for 20210529_155539 patterns
     filename = filename_without_ext(image_file)
     tokens = filename.scan(/(\d{4})(\d{2})(\d{2})\_(\d{2})(\d{2})(\d{2})/).flatten
     if tokens.compact.length == 6
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for 20210529_155539_8 patterns
     tokens = filename.scan(/(\d{4})(\d{2})(\d{2})\_(\d{2})(\d{2})(\d{2})\_/).flatten
     if tokens.compact.length == 6
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for 2011-07-09 23.03.53 patterns
     tokens = filename.scan(/(\d{4})-(\d{2})-(\d{2}) (\d{2}).(\d{2}).(\d{2})/).flatten
     if tokens.compact.length == 6
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for CameraZOOM-20131224200623261 patterns
     # for CameraZOOM-2013 12 24 20 06 23 261 patterns
     tokens = filename.scan(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\d{3}/).flatten
     if tokens.compact.length == 6
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for signal-2024-06-20-12-55-44-273 patterns
     tokens = filename.scan(/(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-\d{3}/).flatten
     if tokens.compact.length == 6
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for DJI_20250308180700_0070_D patterns
     tokens = filename.scan(/\_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\_/).flatten
     if tokens.compact.length == 6
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for IMG-20220731-WA0015 patterns
     # for IMG_20220731-WA0015 patterns
     tokens = filename.scan(/(\d{4})(\d{2})(\d{2})-/).flatten
     if tokens.compact.length == 3
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{filename}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     # for Photos from 2024/P01020304.jpg or 2024/IMG_123123.jpg pattern
     tokens = image_file.scan(/Photos\ from\ (\d{4})\//).flatten
     if tokens.compact.length == 1
-      time = Time.new(*tokens)
-      debug("Time inferred file: #{image_file}, time: #{time}")
-      return time
+      return time_from_tokens(filename, *tokens)
     end
 
     return nil
@@ -397,6 +393,11 @@ def run_tests
 
   test("infer time from image file name Photos from IMG_12.jpg") do
     time = fixer.infer_time_from_image_file("Photos from IMG_12.jpg")
+    time == nil
+  end
+
+  test("infer time from image file name from IMG_31232412-WA0015.jpg") do
+    time = fixer.infer_time_from_image_file("IMG_31232412-WA0015.jpg")
     time == nil
   end
 end
