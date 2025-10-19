@@ -92,10 +92,34 @@ class GooglePhotosFixer
       return time
     end
 
+    # for 20210529_155539_8 patterns
+    tokens = filename.scan(/(\d{4})(\d{2})(\d{2})\_(\d{2})(\d{2})(\d{2})\_/).flatten
+    if tokens.compact.length == 6
+      time = Time.new(*tokens)
+      debug("Time inferred file: #{filename}, time: #{time}")
+      return time
+    end
+
+    # for 2011-07-09 23.03.53 patterns
+    tokens = filename.scan(/(\d{4})-(\d{2})-(\d{2}) (\d{2}).(\d{2}).(\d{2})/).flatten
+    if tokens.compact.length == 6
+      time = Time.new(*tokens)
+      debug("Time inferred file: #{filename}, time: #{time}")
+      return time
+    end
+
     # for CameraZOOM-20131224200623261 patterns
     # for CameraZOOM-2013 12 24 20 06 23 261 patterns
-    tokens = filename.scan(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{3})/).flatten
-    if tokens.compact.length == 7
+    tokens = filename.scan(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\d{3}/).flatten
+    if tokens.compact.length == 6
+      time = Time.new(*tokens)
+      debug("Time inferred file: #{filename}, time: #{time}")
+      return time
+    end
+
+    # for signal-2024-06-20-12-55-44-273 patterns
+    tokens = filename.scan(/(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-\d{3}/).flatten
+    if tokens.compact.length == 6
       time = Time.new(*tokens)
       debug("Time inferred file: #{filename}, time: #{time}")
       return time
@@ -104,6 +128,15 @@ class GooglePhotosFixer
     # for DJI_20250308180700_0070_D patterns
     tokens = filename.scan(/\_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\_/).flatten
     if tokens.compact.length == 6
+      time = Time.new(*tokens)
+      debug("Time inferred file: #{filename}, time: #{time}")
+      return time
+    end
+
+    # for IMG-20220731-WA0015 patterns
+    # for IMG_20220731-WA0015 patterns
+    tokens = filename.scan(/(\d{4})(\d{2})(\d{2})-/).flatten
+    if tokens.compact.length == 3
       time = Time.new(*tokens)
       debug("Time inferred file: #{filename}, time: #{time}")
       return time
@@ -332,14 +365,29 @@ def run_tests
     time == Time.new(2021, 5, 29, 15, 55, 39)
   end
 
+  test("infer time from image file name 2011-07-09 23.03.53.jpg") do
+    time = fixer.infer_time_from_image_file("2011-07-09 23.03.53.jpg")
+    time == Time.new(2011, 7, 9, 23, 3, 53)
+  end
+
   test("infer time from image file name CameraZOOM-20131224200623261.jpg") do
     time = fixer.infer_time_from_image_file("CameraZOOM-20131224200623261.jpg")
     time == Time.new(2013, 12, 24, 20, 6, 23)
   end
 
+  test("infer time from image file name signal-2024-06-20-12-55-44-273.jpg") do
+    time = fixer.infer_time_from_image_file("signal-2024-06-20-12-55-44-273.jpg")
+    time == Time.new(2024, 6, 20, 12, 55, 44)
+  end
+
   test("infer time from image file name DJI_20250308180700_0070_D.jpg") do
     time = fixer.infer_time_from_image_file("DJI_20250308180700_0070_D.jpg")
     time == Time.new(2025, 3, 8, 18, 7, 0)
+  end
+
+  test("infer time from image file name IMG-20220731-WA0015.jpg") do
+    time = fixer.infer_time_from_image_file("IMG-20220731-WA0015.jpg")
+    time == Time.new(2022, 7, 31, 0, 0, 0)
   end
 
   test("infer time from image file name Photos from 2024/P01020304.jpg") do
