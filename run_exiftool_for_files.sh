@@ -98,7 +98,7 @@ process_file() {
 
   cmd=(exiftool -overwrite_original -progress)
   if [[ -n "$dt" ]]; then
-    cmd+=("-DateTimeOriginal=$dt" "-CreateDate=$dt" "-AllDates=$dt" "-OffsetTimeOriginal=+00:00")
+    cmd+=("-DateTimeOriginal=$dt" "-CreateDate=$dt" "-AllDates=$dt" "-TrackCreateDate=$dt" "-TrackModifyDate=$dt" "-MediaCreateDate=$dt" "-MediaModifyDate=$dt" "-OffsetTimeOriginal=+00:00")
   fi
   if ! is_zero "$lat" && ! is_zero "$lon"; then
     cmd+=("-GPSLatitude=$lat" "-GPSLongitude=$lon")
@@ -107,10 +107,10 @@ process_file() {
     fi
   fi
   if [[ -n "$tags" ]]; then
-    cmd+=("-Keywords=$tags" "-Subject=$tags")
+    cmd+=("-Keywords=$tags" "-Subject=$tags" "-TagsList=$tags")
   fi
   if [[ -n "$description" ]]; then
-    cmd+=("-Caption-Abstract=$description" "-ImageDescription=$description")
+    cmd+=("-Caption-Abstract=$description" "-ImageDescription=$description" "-XPComment=$description" "-Description=$description")
   fi
   cmd+=("$img")
 
