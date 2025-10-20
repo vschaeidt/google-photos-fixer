@@ -58,3 +58,10 @@ exiftool -r -tagsfromfile "%d/%F.supplemental-metadata.json" \
 
 ## More documentation
 A more detailed description of the motivation to create this, as well as how to use it can be found on [The Blog of Rodrigo Panachi](https://blog.rpanachi.com/how-to-takeout-from-google-photos-and-fix-metadata-exif-info)
+
+## bash scripts
+alternatively, run those bash scripts:
+```bash
+./rename-to-supplemental-metadata.sh -f -d takeout/Takeout/Google\ Fotos/
+./run_exiftool_for_files.sh --jobs 5 takeout/Takeout/Google\ Fotos/
+```
