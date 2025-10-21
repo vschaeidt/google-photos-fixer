@@ -47,8 +47,10 @@ then tell exiftool to use that field instead of the raw timestamp:
 
 ```bash
 exiftool -r -tagsfromfile "%d/%F.supplemental-metadata.json" \
-  "-DateTimeOriginal<PhotoTakenTimeDate" "-DateTimeOriginal<PhotoTakenTimeDate" \
-  "-CreateDate<PhotoTakenTimeDate" "-AllDates<PhotoTakenTimeDate" \
+  "-DateTimeOriginal<PhotoTakenTimeDate" "-CreateDate<PhotoTakenTimeDate" \
+  "-AllDates<PhotoTakenTimeDate" "-TrackCreateDate<PhotoTakenTimeDate" \
+  "-TrackModifyDate<PhotoTakenTimeDate" "-MediaCreateDate<PhotoTakenTimeDate" \
+  "-MediaModifyDate<PhotoTakenTimeDate" \
   "-GPSAltitude<GeoDataAltitude" "-GPSLatitude<GeoDataLatitude" \
   "-GPSLatitudeRef<GeoDataLatitude" "-GPSLongitude<GeoDataLongitude" \
   "-GPSLongitudeRef<GeoDataLongitude" "-Keywords<Tags" "-Subject<Tags" \
